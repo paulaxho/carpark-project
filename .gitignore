@@ -1,0 +1,22 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+
+# Data — large, lives on UCL filespace / external storage
+data/
+!data/**/README.md
+!data/**/*.yaml
+
+# Model weights — re-downloadable, use HuggingFace/S3
+*.pt
+models/weights/
+
+# Training outputs
+models/runs/
+runs/
+outputs/
