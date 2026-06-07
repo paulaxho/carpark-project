@@ -20,3 +20,14 @@ models/weights/
 models/runs/
 runs/
 outputs/
+
+*.tif
+*.tiff
+*.jpg
+*.jpeg
+*.png
+*.zip
+*.tar
+*.tar.gz
+*.csv
+*.geojson

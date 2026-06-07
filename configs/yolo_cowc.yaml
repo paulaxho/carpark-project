@@ -1,0 +1,9 @@
+# YOLO data contract for the COWC car detector. Consumed by train.py / evaluate.py.
+# Ultralytics resolves train/val relative to `path`, and `path` relative to this
+# file's location. If you hit "dataset not found", make `path` absolute.
+path: /Users/apple/Documents/carpark-project/data/cowc/processed
+train: images/train
+val: images/val
+nc: 1
+names:
+  0: car

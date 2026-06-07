@@ -1,0 +1,53 @@
+# ============================================================================
+# COWC build configuration — single source of truth for scripts/build_cowc.py.
+# Every value here traces to a decision; nothing downstream is hardcoded.
+# ============================================================================
+
+dataset: cowc
+
+# --- Paths -------------------------------------------------------------------
+# scenes_root is where the per-region folders live (same root notebook 01 scans).
+scenes_root:   data/cowc/raw/cowc/datasets/ground_truth_sets
+processed_dir: data/cowc/processed
+metadata_dir:  data/cowc/metadata
+inventory_csv: data/cowc/metadata/cowc_scene_inventory.csv   # written by notebook 01
+
+# --- Resolution (resample.py) ------------------------------------------------
+source_resolution_cm: 15.0    # COWC native
+target_resolution_cm: 25.0    # match UK Getmapping imagery  (scale = 15/25 = 0.6)
+
+# --- Bounding boxes (boxes.py) -----------------------------------------------
+# Locked: 24 px @15 cm downsamples to ~14 px @25 cm. Confirmed by overlay QC.
+box_px: 14
+
+# --- Tiling (tiling.py) ------------------------------------------------------
+tile_size: 640
+stride: 512                   # ~20% overlap + edge-flush -> full coverage, no edge loss
+keep_empty_fraction: 0.12     # pure-background tiles kept, sized to positive-tile count
+skip_blank_std: 1.0           # skip near-uniform (no-data mosaic padding) tiles
+use_negatives: true           # use *_Annotated_Negatives to keep hard-negative tiles
+rng_seed: 42                  # reproducible empty-tile sampling
+
+# --- Scene-level split (splits.py) -------------------------------------------
+# Identifiers below are the EXACT `scene` column from cowc_scene_inventory.csv.
+# validate_split_config() matches them verbatim, so copy, don't retype.
+#
+# Held out: one dense, RGB Toronto scene. Rationale (from the inventory):
+#   * RGB  -> matches the UK target colour domain (not grayscale Vaihingen);
+#   * dense (~3.8k cars) -> a meaningful signal for dense car parks, our case;
+#   * whole-scene holdout -> honest cross-scene generalisation read;
+#   * ~10% of all cars (3834 / 37721) -> a healthy val fraction;
+#   * leaves the other two Toronto scenes + all of Utah for training.
+# Alternatives: swap for "03747" (similar) — avoid Potsdam (too sparse/small),
+# Vaihingen (grayscale), and "12TVL240120" (one Utah scene = 1/3 of all cars).
+val_scenes:
+  - "03559"
+
+# Real TEST set = UK retail imagery (data/uk_retail/), the deployment domain.
+test_scenes: []
+
+# Scenes to leave OUT of training entirely. Empty = use every non-held-out
+# scene (RGBA/grayscale all coerced to RGB by resample). Note: the inventory's
+# is_color flag mislabels Columbus as grayscale — it is RGB (mode column is the
+# reliable signal), so there is no reason to exclude it here.
+exclude_scenes: []
