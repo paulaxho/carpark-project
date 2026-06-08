@@ -1,0 +1,7 @@
+timestamp,name,model,data,split,conf,iou,precision,recall,f1,mAP50,mAP50_95,ap_small
+2026-06-08T02:41:00,cowc_on_cowc,best.pt,yolo_cowc.yaml,val,0.001,0.6,0.9239,0.8861,0.9046,0.9335,0.4870,n/a
+2026-06-08T02:41:14,vedai_on_vedai,best.pt,yolo_vedai.yaml,val,0.001,0.6,0.8481,0.7139,0.7752,0.8175,0.4788,n/a
+2026-06-08T02:41:24,cowc_on_vedai,best.pt,yolo_vedai.yaml,val,0.001,0.6,0.3108,0.4244,0.3589,0.2020,0.0447,n/a
+2026-06-08T02:44:26,vedai_on_cowc,best.pt,yolo_cowc.yaml,val,0.001,0.6,0.2296,0.2582,0.2431,0.1684,0.0361,n/a
+2026-06-08T12:40:14,combined_on_cowc,best.pt,yolo_cowc.yaml,val,0.001,0.6,0.9380,0.8943,0.9156,0.9425,0.5162,n/a
+2026-06-08T12:40:33,combined_on_vedai,best.pt,yolo_vedai.yaml,val,0.001,0.6,0.6401,0.6919,0.6650,0.6959,0.3443,n/a
