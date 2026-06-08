@@ -1,0 +1,24 @@
+# YOLO data contract for the COMBINED COWC + VEDAI car detector.
+# Consumed by train.py / evaluate.py.
+#
+# Multi-dataset: train/val are LISTS of ABSOLUTE image dirs. With a list there is
+# no single `path:` root, so each entry must be a full absolute path. Ultralytics
+# finds labels by swapping /images/ -> /labels/ in each path (both live under
+# processed/, so this works).
+#
+# IMPORTANT: paths MUST be ABSOLUTE and machine-specific — same gotcha as cowc/vedai.
+#   Mac: /Users/apple/Documents/carpark-project/data/...
+#   Lab: /cs/student/msc/edt/2025/vilajeti/carpark-project/data/...
+# On the GPU, sed the /Users/apple/Documents prefix to the lab prefix (see below).
+#
+# Class index 0 is the single vehicle class in both datasets (COWC "car",
+# VEDAI "vehicle") — matched by index; the name is cosmetic.
+train:
+  - /Users/apple/Documents/carpark-project/data/cowc/processed/images/train
+  - /Users/apple/Documents/carpark-project/data/vedai/processed/images/train
+val:
+  - /Users/apple/Documents/carpark-project/data/cowc/processed/images/val
+  - /Users/apple/Documents/carpark-project/data/vedai/processed/images/val
+nc: 1
+names:
+  0: vehicle
