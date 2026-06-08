@@ -1,0 +1,26 @@
+# VEDAI dataset — BUILD config (read by build_vedai.py).
+# Mirrors configs/cowc.yaml: the data-prep recipe, NOT the YOLO training contract.
+# (The YOLO contract — path/train/val/nc/names — lives in configs/yolo_vedai.yaml.)
+
+# --- raw input layout ---
+raw_images_dir: data/vedai/raw/Vehicules512        # <id>_co.png (colour), <id>_ir.png (ignored)
+raw_annotations_dir: data/vedai/raw/Annotations512  # <id>.txt, 14-col VEDAI format
+
+# --- output ---
+processed_dir: data/vedai/processed                # images/{train,val} + labels/{train,val}
+metadata_dir: data/vedai/metadata                  # build stats CSV
+
+# --- resolution matching (VEDAI 512 is 12.5 cm/pixel; project target is 25 cm) ---
+source_resolution_cm: 12.5
+target_resolution_cm: 25.0                          # -> scale 0.5, 512px -> 256px
+
+# --- class filter (THIS VEDAI download's scheme, confirmed against the data) ---
+# Keep genuine passenger vehicles only; collapse all to class 0 = vehicle.
+#   1 car | 3 pickup | 10 van | 12 small car | 13 large car
+# Dropped: 2 truck, 4 tractor, 5 camping, 6 boat, 7 motorcycle, 9 bus,
+#          11 other, 23 board, 31 plane, and any unmapped id.
+car_like_class_ids: [1, 3, 10, 12, 13]
+
+# --- split (image-level: VEDAI frames are independent locations, sparse IDs) ---
+val_fraction: 0.10
+split_seed: 0

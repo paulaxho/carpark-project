@@ -1,0 +1,16 @@
+# VEDAI dataset — YOLO data contract (read by Ultralytics / train.py).
+# Mirrors configs/yolo_cowc.yaml.
+#
+# IMPORTANT: `path` MUST be ABSOLUTE. Ultralytics resolves train/val relative to
+# its own datasets dir, NOT relative to this file — same gotcha as COWC.
+#   Mac:  /Users/apple/Documents/carpark-project/data/vedai/processed
+#   Lab:  /cs/student/msc/edt/2025/vilajeti/carpark-project/data/vedai/processed
+# Edit the line below to match the machine you train on.
+
+path: /Users/apple/Documents/carpark-project/data/vedai/processed
+train: images/train
+val: images/val
+
+nc: 1
+names:
+  0: vehicle
