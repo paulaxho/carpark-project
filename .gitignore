@@ -12,7 +12,7 @@ data/
 !data/**/README.md
 !data/**/*.yaml
 
-# Model weights — re-downloadable, use HuggingFace/S3
+# Model weights
 *.pt
 models/weights/
 
@@ -31,3 +31,9 @@ outputs/
 *.tar.gz
 *.csv
 *.geojson
+
+# Registry — keep this one CSV tracked despite the blanket ignores above
+!data/uk_retail/
+!data/uk_retail/geolytix/
+!data/uk_retail/geolytix/processed/
+!data/uk_retail/geolytix/processed/uk_site_registry_final.csv
