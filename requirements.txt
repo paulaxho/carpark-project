@@ -23,3 +23,8 @@ folium==0.14.0
 # Notebook
 jupyterlab==4.2.0
 ipykernel==6.29.4
+
+rasterio 
+geopandas 
+shapely 
+pillow
