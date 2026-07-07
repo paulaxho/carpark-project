@@ -1,0 +1,30 @@
+# UK retail car-park dataset config.
+#
+# Mirrors configs/yolo_cowc.yaml in spirit: the split is EXPLICIT and
+# DETERMINISTIC. The site-level calibration/test split is frozen in
+# uk_site_registry_final.csv (proposed_split) and must never be re-derived.
+#
+# `calibration_val_sites` below is the only choice made here: which of the 10
+# calibration sites are held out to MONITOR the uk_adapt fine-tune. Named, not
+# random, so it is reproducible and documentable (same philosophy as
+# src/splits.py for COWC scenes). Edit this list if you want a different
+# monitoring split; everything else is mechanical.
+#
+# Site-level (not tile-level) holdout: tiles from a held-out site never appear
+# in the fine-tune set, so overlapping tiles can't leak cars across train/val.
+
+# --- Ultralytics keys (used by evaluate.py / model.val) --------------------
+path: /Users/apple/Documents/carpark-project/data/uk_retail/yolo_uk
+train: images/calibration     # all 10 calibration sites
+val: images/test              # held-out 20 test sites -- evaluation only
+test: images/test
+nc: 1
+names:
+  0: car
+
+# --- project-specific keys (read by assemble_uk_dataset.py) ----------------
+# Two calibration sites held out to monitor the uk_adapt fine-tune.
+# One Large + one Small so the monitoring signal spans the size range.
+calibration_val_sites:
+  - UK020   # Waitrose Colchester (Large)
+  - UK009   # Lidl Penylan Cardiff (Small)
