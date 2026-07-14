@@ -57,11 +57,20 @@ def sh(cmd):
     subprocess.run([str(c) for c in cmd], check=True)
 
 
-def evaluate(model: Path, name: str):
-    """Score `model` on the held-out UK test split via the existing evaluator."""
-    sh([sys.executable, SCRIPTS / "evaluate.py",
-        "--model", model, "--data", UK_CONFIG, "--split", "test",
-        "--name", name, "--device", DEVICE])
+def evaluate(model: Path, name: str, single_cls: bool = False):
+    """Score `model` on the held-out UK test split via the existing evaluator.
+
+    single_cls: class-agnostic scoring. Needed only for the stock-COCO baseline,
+    whose class 0 is 'person'; without it the baseline is credited only for its
+    'person' predictions, not its real car (COCO class 2) detections. It is a
+    no-op for the single-class transfer/uk_adapt models (1 class -> 1 class).
+    """
+    cmd = [sys.executable, SCRIPTS / "evaluate.py",
+           "--model", model, "--data", UK_CONFIG, "--split", "test",
+           "--name", name, "--device", DEVICE]
+    if single_cls:
+        cmd.append("--single-cls")
+    sh(cmd)
 
 
 def check():
@@ -79,8 +88,11 @@ def check():
 def baseline():
     if not STOCK_WEIGHTS.exists():
         sys.exit(f"missing {STOCK_WEIGHTS}")
-    print("== baseline (stock YOLOv8) -> UK test ==")
-    evaluate(STOCK_WEIGHTS, "baseline_on_uk_test")
+    print("== baseline (stock YOLOv8, class-agnostic) -> UK test ==")
+    # single_cls=True: score any detection on a real car, regardless of the COCO
+    # label the stock model assigns. Fair, artifact-free floor; consistent with
+    # the single-class transfer/uk_adapt evaluations.
+    evaluate(STOCK_WEIGHTS, "baseline_on_uk_test_singlecls", single_cls=True)
 
 
 def transfer():

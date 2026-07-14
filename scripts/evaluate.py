@@ -103,6 +103,7 @@ def main(args) -> None:
         device=args.device,
         iou=args.iou,
         conf=args.conf,
+        single_cls=args.single_cls,
         plots=True,
         project=str(PROJECT_ROOT / "outputs" / "eval_runs"),
         name=args.name,
@@ -161,4 +162,9 @@ if __name__ == "__main__":
                     help="confidence threshold for metric computation (0.001 = standard mAP eval)")
     ap.add_argument("--iou", type=float, default=0.6,
                     help="NMS IoU threshold during evaluation")
+    ap.add_argument("--single-cls", action="store_true",
+                    help="class-agnostic eval: collapse all predicted classes to one "
+                         "foreground class. Use for the stock-COCO baseline so it is "
+                         "credited for any detection on a real car (COCO class 2), not "
+                         "just its class-0 ('person') predictions.")
     main(ap.parse_args())
