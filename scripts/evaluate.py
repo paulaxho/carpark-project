@@ -41,6 +41,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import yaml
 from ultralytics import YOLO
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -97,6 +98,21 @@ def main(args) -> None:
     print(f"[eval] device = {args.device}")
 
     model = YOLO(str(model_path))
+
+    # Cosmetic label fix for class-agnostic eval. A stock COCO checkpoint labels
+    # its class 0 as 'person', which then appears on every plot (confusion matrix,
+    # curves, label/pred mosaics). Under --single-cls the class is a single
+    # foreground category, so relabel it with the dataset's own name (e.g. 'car')
+    # for clear, honest figures. This changes only the displayed name, not scoring.
+    if args.single_cls:
+        try:
+            ds_names = yaml.safe_load(Path(data_path).read_text()).get("names", {0: "object"})
+            label0 = ds_names[0] if isinstance(ds_names, dict) else list(ds_names)[0]
+            model.model.names = {i: label0 for i in model.model.names}
+            print(f"[eval] single-cls: relabelled foreground class -> '{label0}' (display only)")
+        except Exception as e:
+            print(f"[eval] warning: could not relabel class name ({e}); plots keep checkpoint names")
+
     metrics = model.val(
         data=str(data_path),
         split=args.split,
