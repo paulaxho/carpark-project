@@ -5,6 +5,6 @@ timestamp,name,model,data,split,conf,iou,precision,recall,f1,mAP50,mAP50_95,ap_s
 2026-06-08T02:44:26,vedai_on_cowc,best.pt,yolo_cowc.yaml,val,0.001,0.6,0.2296,0.2582,0.2431,0.1684,0.0361,n/a
 2026-06-08T12:40:14,combined_on_cowc,best.pt,yolo_cowc.yaml,val,0.001,0.6,0.9380,0.8943,0.9156,0.9425,0.5162,n/a
 2026-06-08T12:40:33,combined_on_vedai,best.pt,yolo_vedai.yaml,val,0.001,0.6,0.6401,0.6919,0.6650,0.6959,0.3443,n/a
-2026-07-07T14:06:57,baseline_on_uk_test,yolov8s.pt,yolo_uk.yaml,test,0.001,0.6,0.4146,0.1080,0.1714,0.2382,0.0866,n/a
+2026-07-07T14:06:57,baseline_on_uk_test,yolov8s.pt,yolo_uk.yaml,test,0.001,0.6,0.2570,0.4655,0.3311,0.2673,0.0913,n/a
 2026-07-07T14:07:09,transfer_on_uk_test,best.pt,yolo_uk.yaml,test,0.001,0.6,0.6945,0.4828,0.5696,0.5280,0.1459,n/a
 2026-07-07T14:19:31,uk_adapt_on_uk_test,best.pt,yolo_uk.yaml,test,0.001,0.6,0.8457,0.8447,0.8452,0.8855,0.3522,n/a
