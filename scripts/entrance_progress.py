@@ -63,7 +63,7 @@ def main():
     done = (df.status == "done").sum()
     _save(df.to_csv(index=False), OUT / "entrance_progress.csv")
 
-    tick = {"done": "✅ done", "partial": "🟡 partial", "todo": "⬜ todo"}
+    tick = {"done": "done", "partial": "partial", "todo": "todo"}
     md = [f"# Entrance digitising progress\n",
           f"**{done} / {len(df)} sites complete** "
           f"({(df.status=='partial').sum()} partial, "

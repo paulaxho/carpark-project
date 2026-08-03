@@ -8,11 +8,6 @@ predictions) is to map every box to GLOBAL clip coordinates via tile_index.csv,
 then merge boxes from DIFFERENT tiles that overlap heavily (IoU >= threshold):
 those are the same physical car.
 
-This module holds that logic so count_site.py, select_threshold.py and
-estimate_occupancy.py all merge identically. Ultralytics is imported lazily
-inside the predict helpers, so the geometry/metric functions import with no ML
-dependency (and can be unit-tested without a model).
-
 Coordinate conventions
 ----------------------
 - Ground-truth .txt files are YOLO-normalised: "cls cx cy w h" in [0,1] of the
