@@ -1,0 +1,2 @@
+tile,site_id,col_off,row_off,width,height,ulx,uly,pixel_size,crs
+UK012_r00000_c00000,UK012,0,0,640,640,570275.0,158460.75,0.25,EPSG:27700
