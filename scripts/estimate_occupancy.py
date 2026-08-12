@@ -25,8 +25,8 @@ Outputs
 -------
   outputs/stats/occupancy_eval.csv     per (site, model) row
   outputs/stats/occupancy_summary.csv  per-model aggregate metrics
-  outputs/figures/fig_occupancy_scatter.png   predicted vs truth COUNT
-  outputs/figures/fig_occupancy_rate.png      predicted vs true OCCUPANCY rate
+  outputs/figures/report/fig_occupancy_scatter.png   predicted vs truth COUNT
+  outputs/figures/report/fig_occupancy_rate.png      predicted vs true OCCUPANCY rate
 
 Usage (from project root):
     python scripts/select_threshold.py      # first: freeze thresholds
@@ -45,7 +45,7 @@ REGISTRY = ROOT / "data/uk_retail/geolytix/processed/uk_site_registry_final.csv"
 THRESHOLDS = ROOT / "outputs/stats/occupancy_thresholds.csv"
 PROCESSED = ROOT / "data/uk_retail/processed"
 STATS = ROOT / "outputs/stats"
-FIGS = ROOT / "outputs/figures"
+FIGS = ROOT / "outputs/figures/report"
 MERGE_IOU = 0.5
 IMGSZ = 640
 
@@ -175,40 +175,48 @@ def _figures(order, truth, caps, preds):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
+    # Width-aware sizes so on-page text matches the 14-in charts.
+    # FIG_W = figure width (in); INCL = \includegraphics fraction for these figures.
+    FIG_W, INCL, REF_W = 6.2, 0.55, 14.0
+    k = (FIG_W / INCL) / REF_W
+    TITLE_FS, LABEL_FS, NOTE_FS, TICK_FS = 17*k, 13*k, 12*k, 12*k
+
     colors = {"baseline": "#e8862a", "transfer": "#3a6ea5", "uk_adapt": "#3ba55d"}
     labels = {"baseline": "Baseline", "transfer": "Transfer", "uk_adapt": "UK-adaptation"}
 
     # ---- count scatter ----
     t = [truth[s] for s in order]
     hi = max(t + [max(preds[m].values()) for m in MODEL_ORDER]) * 1.05
-    fig, ax = plt.subplots(figsize=(6.2, 6))
+    fig, ax = plt.subplots(figsize=(FIG_W, 6))
     ax.plot([0, hi], [0, hi], "--", color="#999", lw=1, label="perfect (y = x)")
     for m in MODEL_ORDER:
         ax.scatter(t, [preds[m][s] for s in order], s=42, alpha=0.8,
                    color=colors[m], edgecolor="white", linewidth=0.6, label=labels[m])
     ax.set_xlim(0, hi); ax.set_ylim(0, hi)
-    ax.set_xlabel("True car count (de-duplicated ground truth)")
-    ax.set_ylabel("Predicted car count")
-    ax.set_title("Counting accuracy on the 20 UK test sites")
-    ax.legend(frameon=False); ax.set_aspect("equal")
-    fig.tight_layout(); fig.savefig(FIGS / "fig_occupancy_scatter.png", dpi=200)
+    ax.set_xlabel("True car count (de-duplicated ground truth)", fontsize=LABEL_FS)
+    ax.set_ylabel("Predicted car count", fontsize=LABEL_FS)
+    ax.set_title("Counting accuracy on the 20 UK test sites", fontsize=TITLE_FS, fontweight="bold")
+    ax.tick_params(labelsize=TICK_FS)
+    ax.legend(frameon=False, fontsize=NOTE_FS); ax.set_aspect("equal")
+    fig.tight_layout(); fig.savefig(FIGS / "fig_occupancy_scatter.png", dpi=300)
     plt.close(fig)
 
     # ---- occupancy-rate scatter ----
     to = [truth[s] / caps[s] * 100 for s in order]
     hi2 = max(to + [max(preds[m][s] / caps[s] * 100 for s in order)
                     for m in MODEL_ORDER]) * 1.05
-    fig, ax = plt.subplots(figsize=(6.2, 6))
+    fig, ax = plt.subplots(figsize=(FIG_W, 6))
     ax.plot([0, hi2], [0, hi2], "--", color="#999", lw=1, label="perfect (y = x)")
     for m in MODEL_ORDER:
         ax.scatter(to, [preds[m][s] / caps[s] * 100 for s in order], s=42, alpha=0.8,
                    color=colors[m], edgecolor="white", linewidth=0.6, label=labels[m])
     ax.set_xlim(0, hi2); ax.set_ylim(0, hi2)
-    ax.set_xlabel("True occupancy rate (% of capacity)")
-    ax.set_ylabel("Predicted occupancy rate (%)")
-    ax.set_title("Occupancy-rate accuracy on the 20 UK test sites")
-    ax.legend(frameon=False); ax.set_aspect("equal")
-    fig.tight_layout(); fig.savefig(FIGS / "fig_occupancy_rate.png", dpi=200)
+    ax.set_xlabel("True occupancy rate (% of capacity)", fontsize=LABEL_FS)
+    ax.set_ylabel("Predicted occupancy rate (%)", fontsize=LABEL_FS)
+    ax.set_title("Occupancy-rate accuracy on the 20 UK test sites", fontsize=TITLE_FS, fontweight="bold")
+    ax.tick_params(labelsize=TICK_FS)
+    ax.legend(frameon=False, fontsize=NOTE_FS); ax.set_aspect("equal")
+    fig.tight_layout(); fig.savefig(FIGS / "fig_occupancy_rate.png", dpi=300)
     plt.close(fig)
 
 

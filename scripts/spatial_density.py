@@ -97,7 +97,14 @@ def render_heatmap(site, site_dir, offs, cx, cy, out_png, sigma_m, px, model):
     _, _, dens = kde_surface(cx, cy, W, H, step, sigma_px)
     dens = np.ma.masked_less(dens, dens.max() * 0.04) if dens.max() > 0 else dens
 
-    fig, ax = plt.subplots(figsize=(W / 120, H / 120))
+    fig_w, fig_h = W / 120, H / 120
+    # Width-aware sizes: figure width varies per site, so scale fonts to it
+    # (INCL = the \includegraphics fraction you use for these heatmaps).
+    REF_W, INCL = 14.0, 0.75
+    k = (fig_w / INCL) / REF_W
+    TITLE_FS, NOTE_FS = 17 * k, 12 * k
+
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h))
     ax.imshow(canvas, extent=[0, W, H, 0])
     ax.imshow(np.asarray(canvas).mean(2), cmap="gray", alpha=0.45, extent=[0, W, H, 0])
     hm = ax.imshow(dens, cmap="inferno", alpha=0.6, extent=[0, W, H, 0],
@@ -105,13 +112,13 @@ def render_heatmap(site, site_dir, offs, cx, cy, out_png, sigma_m, px, model):
     ax.scatter(cx, cy, s=6, c="cyan", edgecolor="none", alpha=0.6)
     ax.set_xlim(0, W); ax.set_ylim(H, 0); ax.axis("off")
     ax.set_title(f"{site} — parking density ({len(cx)} cars, {model}, "
-                 f"{sigma_m:.0f} m bandwidth)", fontsize=11)
+                 f"{sigma_m:.0f} m bandwidth)", fontsize=TITLE_FS, fontweight="bold")
     cb = fig.colorbar(hm, ax=ax, fraction=0.035, pad=0.02)
-    cb.set_label("relative parking density", fontsize=9)
+    cb.set_label("relative parking density", fontsize=NOTE_FS)
+    cb.ax.tick_params(labelsize=NOTE_FS * 0.85)
     fig.tight_layout()
     fig.savefig(out_png, dpi=150, bbox_inches="tight")
     plt.close(fig)
-
 
 def main():
     ap = argparse.ArgumentParser()
@@ -161,7 +168,6 @@ def main():
         print(f"  {site}: {n} cars -> {site}_car_points.geojson + {site}_density.png")
 
     print(f"\nGeoJSON -> {GEO_OUT}\nHeatmaps -> {FIG_OUT}")
-    print("Open the .geojson in QGIS (EPSG:27700) to join with contextual layers.")
 
 
 if __name__ == "__main__":

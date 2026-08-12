@@ -41,7 +41,7 @@ from shapely.geometry import Point
 ROOT = Path(__file__).resolve().parents[1]
 GPKG = ROOT / "outputs/gis/carpark_occupancy.gpkg"
 STATS = ROOT / "outputs/stats"
-FIGS = ROOT / "outputs/figures/entrance"
+FIGS = ROOT / "outputs/figures/report"
 GRID_M = 2.0          # AOI sampling grid (m)
 RING_M = 10.0         # distance-ring width for the gradient (m)
 
@@ -117,11 +117,15 @@ def figure(site, kind, car_d, area_d, mid, rel, ok, rho, ratio, out_png):
 
 
 def aggregate_dotplot(rows, out_png, tag=""):
-    """One figure, all sites: retail distance-ratio vs a reference line at 1.0.
-    Below 1.0 => cars sit nearer the entrance than the average parking space."""
+    """Retail distance-ratio per site vs a reference line at 1.0."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    # width-aware sizes: FIG_W in, INCL = \includegraphics fraction (0.72\textwidth)
+    FIG_W, INCL, REF_W = 6.4, 0.72, 14.0
+    k = (FIG_W / INCL) / REF_W
+    TITLE_FS, LABEL_FS, TICK_FS = 17*k, 13*k, 11*k
+
     r = [x for x in rows if x["entrance"] == "retail"]
     if not r:
         return
@@ -130,24 +134,29 @@ def aggregate_dotplot(rows, out_png, tag=""):
     ratios = [x["dist_ratio"] for x in r]
     labels = [x["site_id"] for x in r]
     colours = ["#2a8" if v < 0.95 else "#c33" if v > 1.05 else "#999" for v in ratios]
-    fig, ax = plt.subplots(figsize=(6.4, max(3, 0.32 * len(r) + 1)))
+    fig, ax = plt.subplots(figsize=(FIG_W, max(3, 0.34 * len(r) + 1)))
     ax.axvline(1.0, color="#444", ls="--", lw=1, zorder=1)
     ax.hlines(y, 1.0, ratios, color="#ccc", lw=1, zorder=1)
     ax.scatter(ratios, y, c=colours, s=70, zorder=2, edgecolor="k", linewidth=0.4)
-    ax.set_yticks(y); ax.set_yticklabels(labels, fontsize=8)
-    ax.set_xlabel("retail-entrance distance ratio  (cars ÷ available space)")
-    ax.set_title("Do cars cluster near the shop entrance?  (Ratio <1 = yes)"
-                 + ("   [DEMO]" if tag else ""))
+    ax.set_yticks(y); ax.set_yticklabels(labels, fontsize=TICK_FS)
+    ax.tick_params(axis="x", labelsize=TICK_FS)
+    ax.set_xlabel("Retail-entrance distance ratio  (cars / available space)", fontsize=LABEL_FS)
+    ax.set_title("Do cars cluster near the shop entrance?  (ratio <1 = yes)"
+                 + ("   [DEMO]" if tag else ""), fontsize=TITLE_FS, fontweight="bold")
     ax.margins(y=0.02)
-    fig.tight_layout(); fig.savefig(out_png, dpi=150); plt.close(fig)
+    fig.tight_layout(); fig.savefig(out_png, dpi=300); plt.close(fig)
 
 
 def small_multiples(grad, out_png, tag="", n=4):
-    """2x2 panel of representative sites' retail relative-fill gradients,
-    chosen to span the distance-ratio range (Figure-19 style)."""
+    """2x2 panel of representative sites' retail relative-fill gradients."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    # width-aware sizes: 9 in @ \textwidth
+    FIG_W, INCL, REF_W = 9.0, 1.0, 14.0
+    k = (FIG_W / INCL) / REF_W
+    TITLE_FS, PANEL_FS, LABEL_FS, TICK_FS = 17*k, 15*k, 13*k, 12*k
+
     items = [(s, d) for s, d in grad.items()]
     if not items:
         return
@@ -158,22 +167,22 @@ def small_multiples(grad, out_png, tag="", n=4):
         idx = np.linspace(0, len(items) - 1, n).round().astype(int)
         pick = [items[i] for i in idx]
     rows_n = int(np.ceil(len(pick) / 2))
-    fig, axes = plt.subplots(rows_n, 2, figsize=(9, 3.2 * rows_n), squeeze=False)
+    fig, axes = plt.subplots(rows_n, 2, figsize=(FIG_W, 3.4 * rows_n), squeeze=False)
     for ax in axes.ravel():
         ax.set_visible(False)
     for ax, (s, d) in zip(axes.ravel(), pick):
         ax.set_visible(True)
         ax.axhline(1.0, color="#aaa", ls="--", lw=1)
-        ax.plot(d["mid"][d["ok"]], d["rel"][d["ok"]], "o-", color="#c33", ms=4)
-        ax.set_title(f"{s}  (ratio={d['ratio']:.2f}, ρ={d['rho']:+.2f})", fontsize=10)
-        ax.set_xlabel("distance to retail entrance (m)", fontsize=8)
-        ax.set_ylabel("relative fill", fontsize=8)
-        ax.tick_params(labelsize=7)
+        ax.plot(d["mid"][d["ok"]], d["rel"][d["ok"]], "o-", color="#c33", ms=5)
+        ax.set_title(f"{s}  (ratio={d['ratio']:.2f}, ρ={d['rho']:+.2f})",
+                     fontsize=PANEL_FS, fontweight="bold")
+        ax.set_xlabel("distance to retail entrance (m)", fontsize=LABEL_FS)
+        ax.set_ylabel("relative fill", fontsize=LABEL_FS)
+        ax.tick_params(labelsize=TICK_FS)
     fig.suptitle("Parking fill vs distance to the retail entrance, representative sites"
-                 + ("   [DEMO]" if tag else ""), fontsize=11)
-    fig.tight_layout(rect=[0, 0, 1, 0.97])
-    fig.savefig(out_png, dpi=150); plt.close(fig)
-
+                 + ("   [DEMO]" if tag else ""), fontsize=TITLE_FS, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.96])
+    fig.savefig(out_png, dpi=300); plt.close(fig)
 
 def main():
     ap = argparse.ArgumentParser()
