@@ -21,6 +21,8 @@ models/runs/
 runs/
 outputs/
 
+HANDOVER.md
+
 *.tif
 *.tiff
 *.jpg
