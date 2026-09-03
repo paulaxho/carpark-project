@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "carpark-project",
+			"path": "."
+		},
+		{
+			"name": "car_park",
+			"path": "../../Downloads/car_park"
+		}
+	],
+	"settings": {}
+}
