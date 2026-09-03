@@ -84,6 +84,13 @@ bitwise reproduction is not guaranteed across GPUs.
 
 ## Usage
 
+Get the data first (see "Data availability"). Download and place:
+    - COWC   -> data/cowc/raw/
+    - VEDAI  -> data/vedai/raw/
+    - UK 25 cm Digimap imagery -> data/uk_retail/<site>/imagery/
+      (request the exact tiles + capture dates listed in the site registry)
+ The build scripts below assume the raw data is already in place; they do not download it.
+
 Run from the project root. Representative order:
 
 ```bash
